@@ -134,6 +134,13 @@
     };
     # noice.enable = true;
     oil.enable = true;
+    project-nvim = {
+      enable = true;
+      settings = {
+        show_hidden = true;
+        # silent_chdir = false;
+      };
+    };
     telescope = {
       enable = true;
       luaConfig.post = # lua
