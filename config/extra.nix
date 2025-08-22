@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 {
   package = pkgs.neovim-unwrapped;
@@ -71,28 +71,22 @@
         animation = false;
         # add_in_buffer_number_order = true;
       };
-      luaConfig.pre = # lua
-        ''
-          local silent = { noremap=true, silent=true }
-          vim.api.nvim_set_keymap('n', '<Leader>1', ':BufferGoto 1<CR>', silent)
-          vim.api.nvim_set_keymap('n', '<Leader>2', ':BufferGoto 2<CR>', silent)
-          vim.api.nvim_set_keymap('n', '<Leader>3', ':BufferGoto 3<CR>', silent)
-          vim.api.nvim_set_keymap('n', '<Leader>4', ':BufferGoto 4<CR>', silent)
-          vim.api.nvim_set_keymap('n', '<Leader>5', ':BufferGoto 5<CR>', silent)
-          vim.api.nvim_set_keymap('n', '<Leader>6', ':BufferGoto 6<CR>', silent)
-          vim.api.nvim_set_keymap('n', '<Leader>7', ':BufferGoto 7<CR>', silent)
-          vim.api.nvim_set_keymap('n', '<Leader>8', ':BufferGoto 8<CR>', silent)
-          vim.api.nvim_set_keymap('n', '<Leader>9', ':BufferGoto 9<CR>', silent)
-          vim.api.nvim_set_keymap('n', '<Leader>0', ':BufferGoto 10<CR>', silent)
-        '';
+      keymaps =
+        let
+          upTo = x: if x == 0 then [ ] else [ (toString x) ] ++ (upTo (x - 1));
+          f = x: {
+            name = "goTo${x}";
+            value = g x;
+          };
+          g = x: {
+            key = "<Leader>${x}";
+            options.silent = true;
+          };
+        in
+        lib.listToAttrs (map f (upTo 9));
     };
-    conform-nvim = {
-      enable = true;
-      settings = { }; # TODO
-    };
-    direnv = {
-      enable = true;
-    };
+    # conform-nvim.enable = true;
+    direnv.enable = true;
     gitsigns = {
       enable = true;
       settings = {
@@ -101,14 +95,7 @@
         signcolumn = false;
       };
     };
-    indent-blankline = {
-      enable = true;
-      luaConfig.post = # lua
-        ''
-          -- if guifg is not specified, ctermfg gets overwritten
-          vim.cmd [[hi IndentBlanklineChar guifg='Blue' ctermfg=4]]
-        '';
-    };
+    indent-blankline.enable = true;
     lastplace.enable = true;
     # lint.enable = true;
     lualine = {
@@ -125,12 +112,6 @@
         "<C-y>"
         "<C-e>"
       ];
-      luaConfig.pre = # lua
-        ''
-          local silent = { noremap=true, silent=true }
-          vim.keymap.set({"", '!'}, '<ScrollWheelUp', '<C-y>', silent)  
-          vim.keymap.set({"", '!'}, '<ScrollWheelDown>', '<C-e>', silent)    
-        '';
     };
     # noice.enable = true;
     oil.enable = true;
@@ -141,18 +122,7 @@
         # silent_chdir = false;
       };
     };
-    telescope = {
-      enable = true;
-      luaConfig.post = # lua
-        ''
-          local noremap = { noremap=true }
-          vim.api.nvim_set_keymap('n', '<c-p>', '<cmd>Telescope find_files no_ignore=true<CR>', noremap)
-          vim.api.nvim_set_keymap('n', '<Leader>ff', '<cmd>Telescope find_files<CR>', noremap)
-          vim.api.nvim_set_keymap('n', '<Leader>fg', '<cmd>Telescope live_grep<CR>', noremap)
-          vim.api.nvim_set_keymap('n', '<Leader>fb', '<cmd>Telescope buffers<CR>', noremap)
-          vim.api.nvim_set_keymap('n', '<Leader>fh', '<cmd>Telescope help_tags<CR>', noremap)
-        '';
-    };
+    telescope.enable = true;
     todo-comments = {
       enable = true;
       settings = {
@@ -163,27 +133,12 @@
           after = "fg";
         };
       };
-      luaConfig.post = # lua
-        ''
-          -- todo-comments does not natively support cterm colors
-          vim.cmd [[ 
-            hi Todo ctermbg=NONE
-            hi TodoFgTODO ctermbg=NONE ctermfg=5 cterm=BOLD
-            hi TodoFgHACK ctermbg=NONE ctermfg=1 cterm=BOLD
-            hi TodoFgWARN ctermbg=NONE ctermfg=1 cterm=BOLD
-            hi TodoFgPERF ctermbg=NONE ctermfg=2 cterm=BOLD
-            hi TodoFgNOTE ctermbg=NONE ctermfg=7 cterm=BOLD
-            hi TodoFgTEST ctermbg=NONE ctermfg=6 cterm=BOLD
-          ]]
-        '';
     };
     vim-suda = {
       enable = true;
       settings.smart_edit = 1;
     };
-    which-key = {
-      enable = true;
-    };
+    which-key.enable = true;
   };
 
   plugins.mini = {
@@ -199,37 +154,100 @@
     vim-eunuch
   ];
 
+  keymaps = [
+    {
+      key = ";";
+      action = ":";
+    }
+
+    # Visual line movements
+    {
+      key = "j";
+      action = "(v:count == 0 ? 'gj' : 'j')";
+      options = {
+        silent = true;
+        expr = true;
+      };
+    }
+    {
+      key = "k";
+      action = "(v:count == 0 ? 'gk' : 'k')";
+      options = {
+        silent = true;
+        expr = true;
+      };
+    }
+
+    # Keep text selected when fixing indentation
+    {
+      mode = "v";
+      key = "<";
+      action = "<gv";
+      options.silent = true;
+    }
+    {
+      mode = "v";
+      key = ">";
+      action = ">gv";
+      options.silent = true;
+    }
+
+    # For NeoScroll
+    {
+      mode = [
+        ""
+        "!"
+      ];
+      key = "<ScrollWheelUp";
+      action = "<C-y>";
+      options.silent = true;
+    }
+    {
+      mode = [
+        ""
+        "!"
+      ];
+      key = "<ScrollWheelDown";
+      action = "<C-e>";
+      options.silent = true;
+    }
+
+    # Telescope
+    {
+      mode = "n";
+      key = "<c-p>";
+      action = "<cmd>Telescope find_files no_ignore=true<CR>";
+    }
+    {
+      mode = "n";
+      key = "<Leader>ff";
+      action = "<cmd>Telescope find_files<CR>";
+    }
+    {
+      mode = "n";
+      key = "<Leader>fg";
+      action = "<cmd>Telescope live_grep<CR>";
+    }
+    {
+      mode = "n";
+      key = "<Leader>fb";
+      action = "<cmd>Telescope buffers<CR>";
+    }
+    {
+      mode = "n";
+      key = "<Leader>fh";
+      action = "<cmd>Telescope help_tags<CR>";
+    }
+  ];
+
   extraConfigLua =
     # lua
     ''
-      vim.cmd.syntax('on')
-
       vim.cmd [[
         "Italics support
         hi Comment cterm=italic
         let &t_ZH="\e[3m"
         let &t_ZR="\e[23m"
-
-        hi LineNr ctermbg=None
-        hi Normal ctermbg=None
-
-        hi SpellBad ctermbg=None
-        hi FoldColumn ctermbg=None
       ]]
-
-      local noremap = { noremap=true }
-      local silent = { noremap=true, silent=true }
-      local expr = { noremap=true, silent=true, expr=true }
-
-      vim.api.nvim_set_keymap('n', ';', ':', noremap)
-      vim.api.nvim_set_keymap('v', ';', ':', noremap)
-
-      -- Visual Line movements
-      vim.api.nvim_set_keymap("", 'j', "(v:count == 0 ? 'gj' : 'j')", expr)
-      vim.api.nvim_set_keymap("", 'k', "(v:count == 0 ? 'gk' : 'k')", expr)
-
-      -- Keep text selected when fixing indentation
-      vim.api.nvim_set_keymap('v', '<', '<gv', noremap)
-      vim.api.nvim_set_keymap('v', '>', '>gv', noremap)
     '';
 }
