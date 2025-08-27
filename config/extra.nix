@@ -122,7 +122,6 @@
         # silent_chdir = false;
       };
     };
-    telescope.enable = true;
     todo-comments = {
       enable = true;
       settings = {
@@ -210,33 +209,6 @@
       key = "<ScrollWheelDown";
       action = "<C-e>";
       options.silent = true;
-    }
-
-    # Telescope
-    {
-      mode = "n";
-      key = "<c-p>";
-      action = "<cmd>Telescope find_files no_ignore=true<CR>";
-    }
-    {
-      mode = "n";
-      key = "<Leader>ff";
-      action = "<cmd>Telescope find_files<CR>";
-    }
-    {
-      mode = "n";
-      key = "<Leader>fg";
-      action = "<cmd>Telescope live_grep<CR>";
-    }
-    {
-      mode = "n";
-      key = "<Leader>fb";
-      action = "<cmd>Telescope buffers<CR>";
-    }
-    {
-      mode = "n";
-      key = "<Leader>fh";
-      action = "<cmd>Telescope help_tags<CR>";
     }
   ];
 
