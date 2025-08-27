@@ -1,67 +1,161 @@
-{ pkgs, ... }:
-
 {
-  plugins.lsp = {
-    enable = true;
-    servers = {
-      clangd.enable = true;
-      lua_ls.enable = true;
-      hls = {
-        enable = true;
-        installGhc = false;
-      };
-      metals.enable = true;
-      nil_ls.enable = true;
-      # ruff-lsp.enable = true;
-      # rust-analyzer = {
-      #   enable = true;
-      #   installCargo = true;
-      #   installRustc = true;
-      # };
+  plugins.fidget.enable = true;
+
+  autoGroups = {
+    "kickstart-lsp-attach" = {
+      clear = true;
     };
   };
 
-  plugins.fidget.enable = true;
+  plugins.lsp = {
+    enable = true;
 
-  extraPlugins = with pkgs.vimPlugins; [
-    # nvim-lspconfig
-    # nvim-lightbulb
-    # trouble
-  ];
+    servers = {
+      nil_ls.enable = true;
+    };
 
-  # extraConfigLua = # lua
-  #   ''
-  #     local noremap = { noremap=true }
-  #     local silent = { noremap=true, silent=true }
-  #     local expr = { noremap=true, silent=true, expr=true }
-  #
-  #     vim.api.nvim_set_keymap('n', '<space>e', '<cmd>lua vim.diagnostic.open_float()<CR>', silent)
-  #     vim.api.nvim_set_keymap('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<CR>', silent)
-  #     vim.api.nvim_set_keymap('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<CR>', silent)
-  #     vim.api.nvim_set_keymap('n', '<space>q', '<cmd>lua vim.diagnostic.setloclist()<CR>', silent)
-  #
-  #     -- Use an on_attach function to only map the following keys
-  #     -- after the language server attaches to the current buffer
-  #     local on_attach = function(client, bufnr)
-  #       -- Enable completion triggered by <c-x><c-o>
-  #       vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-  #
-  #       -- Mappings.
-  #       -- See `:help vim.lsp.*` for documentation on any of the below functions
-  #       vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>', silent)
-  #       vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', silent)
-  #       vim.api.nvim_buf_set_keymap(bufnr, 'n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', silent)
-  #       vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', silent)
-  #       vim.api.nvim_buf_set_keymap(bufnr, 'n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', silent)
-  #       vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', silent)
-  #       vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', silent)
-  #       vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', silent)
-  #       vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', silent)
-  #       vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', silent)
-  #       vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', silent)
-  #       vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', silent)
-  #       vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', silent)
-  #     end
-  #   '';
+    keymaps = {
+      # Diagnostic keymaps
+      diagnostic = {
+        "<leader>q" = {
+          mode = "n";
+          action = "setloclist";
+          desc = "Open diagnostic [Q]uickfix list";
+        };
+      };
 
+      extra = [
+        # Find references for the word under your cursor.
+        {
+          mode = "n";
+          key = "grr";
+          action.__raw = "require('telescope.builtin').lsp_references";
+          options = {
+            desc = "LSP: [G]oto [R]eferences";
+          };
+        }
+        # Jump to the implementation of the word under your cursor.
+        #  Useful when your language has ways of declaring types without an actual implementation.
+        {
+          mode = "n";
+          key = "gri";
+          action.__raw = "require('telescope.builtin').lsp_implementations";
+          options = {
+            desc = "LSP: [G]oto [I]mplementation";
+          };
+        }
+        # Jump to the definition of the word under your cursor.
+        #  This is where a variable was first declared, or where a function is defined, etc.
+        #  To jump back, press <C-t>.
+        {
+          mode = "n";
+          key = "grd";
+          action.__raw = "require('telescope.builtin').lsp_definitions";
+          options = {
+            desc = "LSP: [G]oto [D]efinition";
+          };
+        }
+        # Fuzzy find all the symbols in your current document.
+        #  Symbols are things like variables, functions, types, etc.
+        {
+          mode = "n";
+          key = "gO";
+          action.__raw = "require('telescope.builtin').lsp_document_symbols";
+          options = {
+            desc = "LSP: Open Document Symbols";
+          };
+        }
+        # Fuzzy find all the symbols in your current workspace.
+        #  Similar to document symbols, except searches over your entire project.
+        {
+          mode = "n";
+          key = "gW";
+          action.__raw = "require('telescope.builtin').lsp_dynamic_workspace_symbols";
+          options = {
+            desc = "LSP: Open Workspace Symbols";
+          };
+        }
+        # Jump to the type of the word under your cursor.
+        #  Useful when you're not sure what type a variable is and you want to see
+        #  the definition of its *type*, not where it was *defined*.
+        {
+          mode = "n";
+          key = "grt";
+          action.__raw = "require('telescope.builtin').lsp_type_definitions";
+          options = {
+            desc = "LSP: [G]oto [T]ype Definition";
+          };
+        }
+      ];
+
+      lspBuf = {
+        # Rename the variable under your cursor.
+        #  Most Language Servers support renaming across files, etc.
+        "grn" = {
+          action = "rename";
+          desc = "LSP: [R]e[n]ame";
+        };
+        # Execute a code action, usually your cursor needs to be on top of an error
+        # or a suggestion from your LSP for this to activate.
+        "gra" = {
+          mode = [
+            "n"
+            "x"
+          ];
+          action = "code_action";
+          desc = "LSP: [G]oto Code [A]ction";
+        };
+        # WARN: This is not Goto Definition, this is Goto Declaration.
+        #  For example, in C this would take you to the header.
+        "grD" = {
+          action = "declaration";
+          desc = "LSP: [G]oto [D]eclaration";
+        };
+      };
+    };
+
+    onAttach = # lua
+      ''
+        local map = function(keys, func, desc)
+          vim.keymap.set('n', keys, func, { buffer = bufnr, desc = 'LSP: ' .. desc })
+        end
+
+        -- The following two autocommands are used to highlight references of the
+        -- word under your cursor when your cursor rests there for a little while.
+        --    See `:help CursorHold` for information about when this is executed
+        --
+        -- When you move your cursor, the highlights will be cleared (the second autocommand).
+        local client = vim.lsp.get_client_by_id(event.data.client_id)
+        if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf) then
+          local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
+          vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
+            buffer = event.buf,
+            group = highlight_augroup,
+            callback = vim.lsp.buf.document_highlight,
+          })
+
+          vim.api.nvim_create_autocmd({ 'CursorMoved', 'CursorMovedI' }, {
+            buffer = event.buf,
+            group = highlight_augroup,
+            callback = vim.lsp.buf.clear_references,
+          })
+
+          vim.api.nvim_create_autocmd('LspDetach', {
+            group = vim.api.nvim_create_augroup('kickstart-lsp-detach', { clear = true }),
+            callback = function(event2)
+              vim.lsp.buf.clear_references()
+              vim.api.nvim_clear_autocmds { group = 'kickstart-lsp-highlight', buffer = event2.buf }
+            end,
+          })
+        end
+
+        -- The following code creates a keymap to toggle inlay hints in your
+        -- code, if the language server you are using supports them
+        if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf) then
+          map('<leader>th', function()
+            vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
+          end, '[T]oggle Inlay [H]ints')
+        end
+      '';
+  };
 }
