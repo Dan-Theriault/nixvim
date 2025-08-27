@@ -125,7 +125,7 @@
     todo-comments = {
       enable = true;
       settings = {
-        signs = false;
+        signs = true;
         highlight = {
           before = "fg";
           keyword = "fg";
