@@ -85,7 +85,6 @@
         in
         lib.listToAttrs (map f (upTo 9));
     };
-    # conform-nvim.enable = true;
     direnv.enable = true;
     gitsigns = {
       enable = true;
@@ -95,9 +94,7 @@
         signcolumn = false;
       };
     };
-    indent-blankline.enable = true;
     lastplace.enable = true;
-    # lint.enable = true;
     lualine = {
       enable = true;
       settings.options = {
@@ -106,13 +103,6 @@
       };
     };
     luasnip.enable = true;
-    neoscroll = {
-      enable = true;
-      settings.mappings = [
-        "<C-y>"
-        "<C-e>"
-      ];
-    };
     # noice.enable = true;
     oil.enable = true;
     # project-nvim = {
@@ -122,6 +112,22 @@
     #     # silent_chdir = false;
     #   };
     # };
+    snacks = {
+      enable = true;
+      settings = {
+        animate.enable = true;
+        bigfile.enable = true;
+        git.enable = true; # TODO keybinds
+        gitbrowse.enable = true; # TODO keybinds
+        indent = {
+          enable = true;
+          scope.enabled = false;
+        };
+        quickfile.enable = true;
+        rename.enable = true; # TODO
+        scroll.enable = true;
+      };
+    };
     todo-comments = {
       enable = true;
       settings = {
@@ -188,26 +194,6 @@
       mode = "v";
       key = ">";
       action = ">gv";
-      options.silent = true;
-    }
-
-    # For NeoScroll
-    {
-      mode = [
-        ""
-        "!"
-      ];
-      key = "<ScrollWheelUp";
-      action = "<C-y>";
-      options.silent = true;
-    }
-    {
-      mode = [
-        ""
-        "!"
-      ];
-      key = "<ScrollWheelDown";
-      action = "<C-e>";
       options.silent = true;
     }
   ];
