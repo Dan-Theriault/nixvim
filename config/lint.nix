@@ -9,6 +9,12 @@
         "statix"
       ];
       bash = [ "shellcheck" ];
+      sh = [ "shellcheck" ];
+      fish = [ "shellcheck" ];
+      c = [ "clangtidy" ];
+      h = [ "clangtidy" ];
+      cpp = [ "clangtidy" ];
+      hpp = [ "clangtidy" ];
     };
 
     # Create autocommand which carries out the actual linting

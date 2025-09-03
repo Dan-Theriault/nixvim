@@ -6,8 +6,17 @@
       notify_no_formatters = false;
       format_on_save = { };
       formatters_by_ft = {
+        "c" = [ "clang-format" ];
+        "h" = [ "clang-format" ];
+        "cpp" = [ "clang-format" ];
+        "hpp" = [ "clang-format" ];
+        # "lua" = [ "stylua" ];
+        # "nix" = [ "nixfmt" ];
         # fallback for unconfigured filetypes
-        "_" = [ "trim_whitespace" ];
+        "_" = [
+          "trim_whitespace"
+          "treefmt"
+        ];
       };
     };
   };
