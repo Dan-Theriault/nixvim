@@ -35,6 +35,7 @@
       "menuone"
       "noselect"
     ];
+    conceallevel = 1;
   };
 
   globals.mapleader = ",";
@@ -104,6 +105,12 @@
     };
     luasnip.enable = true;
     # noice.enable = true;
+    # configure obsidian.md here, but leave it disabled by default
+    obsidian = {
+      settings = {
+        legacy_commands = false;
+      };
+    };
     oil.enable = true;
     # project-nvim = {
     #   enable = true;
