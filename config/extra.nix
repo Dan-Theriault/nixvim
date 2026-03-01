@@ -5,6 +5,19 @@
   viAlias = true;
   vimAlias = true;
 
+  autoCmd = [
+    {
+      event = "FileType";
+      callback.__raw = ''
+        function()
+          if vim.bo.commentstring == "" then
+            vim.bo.commentstring = "// %s"
+          end
+        end
+      '';
+    }
+  ];
+
   opts = {
     shell = "${pkgs.bashInteractive}/bin/bash";
     background = "dark";
