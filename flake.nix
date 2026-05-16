@@ -48,9 +48,9 @@
         let
           nixvimLib = nixvim.lib.${system};
           nvim = nixvim.legacyPackages.${system}.makeNixvimWithModule {
-            inherit pkgs;
             module = {
               imports = inputs.nixpkgs.lib.fileset.toList ./config;
+              nixpkgs.config.allowUnfree = true;
             };
             extraSpecialArgs = { };
           };
